@@ -1,2 +1,1 @@
-# DPCSR_Normal
-use GHPR to compute normal of single LiDAR scan
+# Dense-point-cloud-scan-reconstruction
