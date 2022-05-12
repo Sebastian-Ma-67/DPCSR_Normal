@@ -8,23 +8,21 @@
 #include <iostream>
 #include <cmath>
 
-
-
-int main() {
-
+int main(float *depth_buffer, float *normal_map)
+{
 
 	std::vector<Point3D> vScenePoints;
 	pcl::PointCloud<pcl::PointXYZ>::Ptr pSceneCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::PointCloud<pcl::PointXYZ>::Ptr pRawCloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-	HPDpointclouddataread("scene1oneframe.las", pRawCloud, vScenePoints);
+	HPDpointclouddataread(argv[1], pRawCloud, vScenePoints, 2);
 
 	SamplePoints(*pRawCloud, *pSceneCloud, 3);
 
 	pcl::PointXYZ oViewPoint;
-	//x 0.535947 y  0.62239 z 0.535947 bunny
-	//x 0.457275 y  0.500000 z 1.814216 Cassette.las
-	//x 0.0 -y 0.0 z 0.0 scene1oneframe.las
+	// x 0.535947 y  0.62239 z 0.535947 bunny
+	// x 0.457275 y  0.500000 z 1.814216 Cassette.las
+	// x 0.0 -y 0.0 z 0.0 scene1oneframe.las
 	oViewPoint.x = 0.0;
 	oViewPoint.y = 0.0;
 	oViewPoint.z = 0.0;
@@ -47,23 +45,23 @@ int main() {
 
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 	HpdDisplay hpdisplay;
-	//viewer=hpdisplay.Showsimplecolor(occloud,"grey");
+	// viewer=hpdisplay.Showsimplecolor(occloud,"grey");
 	viewer = hpdisplay.Showclassification(vScenePoints, "random");
-	//viewer = hpdisplay.Showclassification(vScenePoints, "random");
+	// viewer = hpdisplay.Showclassification(vScenePoints, "random");
 	viewer->addSphere(oViewPoint, 0.2, 0.0, 0.0, 1.0, "viewpointer");
-	//cloud->points.push_back(oViewPoint);
-	for (int i = 0; i != oExplicitBuilder.m_vAllSectorClouds.size(); ++i){
+	// cloud->points.push_back(oViewPoint);
+	for (int i = 0; i != oExplicitBuilder.m_vAllSectorClouds.size(); ++i)
+	{
 
 		std::stringstream sMeshStream;
 		sMeshStream << i << "_sec_mesh";
 		std::string sMeshName;
 		sMeshStream >> sMeshName;
 		viewer->addPolygonMesh<pcl::PointXYZ>(oExplicitBuilder.m_vAllSectorClouds[i], oExplicitBuilder.m_vAllSectorFaces[i], sMeshName);
-
 	}
 
 	viewer->addPointCloudNormals<pcl::PointNormal>(pFramePNormal, 1, 0.4f, "normal");
-	pcl::io::savePLYFileASCII("cloudswithnormal.ply", *pFramePNormal);
+	pcl::io::savePLYFileASCII(argv[2], *pFramePNormal);
 
 	while (!viewer->wasStopped())
 	{
@@ -71,9 +69,7 @@ int main() {
 	}
 
 	return 0;
-
 }
-
 
 ////*************for using TSDF as signed distance*********************
 //
@@ -86,7 +82,7 @@ int main() {
 //#include "HpdPointCloudDisplay.h"
 //
 //
-//int main(){
+// int main(){
 //
 //	//raw point clouds
 //	pcl::PointCloud<pcl::PointXYZ>::Ptr pFileCloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -139,7 +135,7 @@ int main() {
 //	oViewPoint.y = 0.92239;
 //	oViewPoint.z = -0.835947;
 //	pViewPoints->points.push_back(oViewPoint);
-//	
+//
 //
 //	//******compute signed distance********
 //	for (int i = 1; i != 2; ++i){
@@ -161,7 +157,7 @@ int main() {
 //	//marching cuber
 //	CIsoSurface<float> oMarchingCuber;
 //	oMarchingCuber.GenerateSurface(oFusion.m_vAccDis, 0,
-//		                           oVoxeler.m_iFinalVoxelNum.ixnum - 1, oVoxeler.m_iFinalVoxelNum.iynum - 1, oVoxeler.m_iFinalVoxelNum.iznum - 1, 
+//		                           oVoxeler.m_iFinalVoxelNum.ixnum - 1, oVoxeler.m_iFinalVoxelNum.iynum - 1, oVoxeler.m_iFinalVoxelNum.iznum - 1,
 //		                           oVoxeler.m_oVoxelLength.x, oVoxeler.m_oVoxelLength.y, oVoxeler.m_oVoxelLength.z);
 //
 //
@@ -203,7 +199,7 @@ int main() {
 //		}
 //	}
 //	WritePointCloudTxt("final_corner_value.txt", *pOutDisClouds, vFinalCornerValue);
-//	
+//
 //	//pcl::PolygonMesh MeshModel;
 //	//pcl::toPCLPointCloud2(*pRawCloud,MeshModel.cloud);
 //	//MeshModel.polygons = oSDer.m_vSurfaceIdxs;
@@ -215,21 +211,20 @@ int main() {
 //	//viewer = hpdisplay.Showclassification(mc->m_vCornerCloud, vInner, "assign");
 //	viewer = hpdisplay.Showfeatureresult(*oVoxeler.m_pCornerCloud, oFusion.m_vAccDis, "redgreen");
 //	//viewer = hpdisplay.Showclassification(pVoxelCorners, "assign");
-//	viewer->addSphere(oViewPoint, 0.02, 0.0, 0.0, 1.0, "viewpointer");	
+//	viewer->addSphere(oViewPoint, 0.02, 0.0, 0.0, 1.0, "viewpointer");
 //	//viewer->addPolygonMesh<pcl::PointXYZ>(pRawCloud, oSDer.m_vSurfaceIdxs, "polyline");
 //
 //
 //	while (!viewer->wasStopped()){
 //
 //		viewer->spinOnce ();
-//	
+//
 //	}
-//	
+//
 //	return 0;
 //
 //
 //}
-
 
 ////*************for using convex hull distance as signed distance*********************
 //
@@ -241,7 +236,7 @@ int main() {
 //#include "HpdPointCloudDisplay.h"
 //
 //
-//int main(){
+// int main(){
 //
 //	//raw point clouds
 //	pcl::PointCloud<pcl::PointXYZ>::Ptr pFileCloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -294,7 +289,7 @@ int main() {
 //	oViewPoint.y = 0.92239;
 //	oViewPoint.z = -0.835947;
 //	pViewPoints->points.push_back(oViewPoint);
-//	
+//
 //	for (int i = 0; i != 1; ++i){
 //		//compute signed distance of a query nodes(voxels)
 //		SignedDistance oSDer;
@@ -306,8 +301,8 @@ int main() {
 //
 //	//marching cuber
 //	CIsoSurface<float> oMarchingCuber;
-//	oMarchingCuber.GenerateSurface(vSDMap, 0, 
-//		                           oVoxeler.m_iFinalVoxelNum.ixnum - 1, oVoxeler.m_iFinalVoxelNum.iynum - 1, oVoxeler.m_iFinalVoxelNum.iznum - 1, 
+//	oMarchingCuber.GenerateSurface(vSDMap, 0,
+//		                           oVoxeler.m_iFinalVoxelNum.ixnum - 1, oVoxeler.m_iFinalVoxelNum.iynum - 1, oVoxeler.m_iFinalVoxelNum.iznum - 1,
 //		                           oVoxeler.m_oVoxelLength.x, oVoxeler.m_oVoxelLength.y, oVoxeler.m_oVoxelLength.z);
 //
 //	//
@@ -338,7 +333,7 @@ int main() {
 //		}
 //	}
 //	WritePointCloudTxt("Outlier_corner.txt", *pOutlierClouds, vOutlierValue);
-//	
+//
 //	//pcl::PolygonMesh MeshModel;
 //	//pcl::toPCLPointCloud2(*pRawCloud,MeshModel.cloud);
 //	//MeshModel.polygons = oSDer.m_vSurfaceIdxs;
@@ -350,21 +345,20 @@ int main() {
 //	//viewer = hpdisplay.Showclassification(mc->m_vCornerCloud, vInner, "assign");
 //	viewer = hpdisplay.Showfeatureresult(*oVoxeler.m_pCornerCloud, vSDMap, "redgreen");
 //	//viewer = hpdisplay.Showclassification(pVoxelCorners, "assign");
-//	viewer->addSphere(oViewPoint, 0.02, 0.0, 0.0, 1.0, "viewpointer");	
+//	viewer->addSphere(oViewPoint, 0.02, 0.0, 0.0, 1.0, "viewpointer");
 //	//viewer->addPolygonMesh<pcl::PointXYZ>(pRawCloud, oSDer.m_vSurfaceIdxs, "polyline");
 //
 //
 //	while (!viewer->wasStopped()){
 //
 //		viewer->spinOnce ();
-//	
+//
 //	}
-//	
+//
 //	return 0;
 //
 //
 //}
-
 
 //////*************for showing the connvex hull in transformation coordiante*********************
 //
@@ -375,7 +369,7 @@ int main() {
 //#include "readtxt.h"
 //
 //
-//int main(){
+// int main(){
 //
 //
 //	pcl::PointCloud<pcl::PointXYZ>::Ptr pRawCloud(new pcl::PointCloud<pcl::PointXYZ>);//ԭʼpcd����
@@ -459,7 +453,7 @@ int main() {
 //		//if (vSDis[i].bInner)
 //		pShowCloud->points.push_back(pVoxelCorners->points[i]);
 //	}
-//		
+//
 //
 //	WritePointCloudTxt("visibilitynode.txt", mc->m_vCornerCloud, vInner);
 //
@@ -489,13 +483,6 @@ int main() {
 //
 //}
 
-
-
-
-
-
-
-
 /////*************for one scene*********************/
 //#include "HpdPointCloudDisplay.h"
 //#include "LasOperator.h"
@@ -506,7 +493,7 @@ int main() {
 //
 //
 //
-//int main() {
+// int main() {
 //
 //
 //	std::vector<Point3D> vScenePoints;
@@ -577,14 +564,13 @@ int main() {
 //
 //}
 
-
 ////*************for one object*********************
 //
 //#include"GHPR.h"
 //#include"HpdPointCloudDisplay.h"
 //
 //
-//int main(){
+// int main(){
 //
 //
 //	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);//ԭʼpcd����
@@ -630,13 +616,12 @@ int main() {
 //	while (!viewer->wasStopped()){
 //
 //		viewer->spinOnce ();
-//	
+//
 //	}
-//	
+//
 //	return 0;
 //
 //}
-
 
 //*************for showing the connvex hull in transformation coordiante*********************
 
@@ -648,7 +633,7 @@ int main() {
 //#include "HpdPointCloudDisplay.h"
 //
 //
-//int main(){
+// int main(){
 //
 //	//raw point clouds
 //	pcl::PointCloud<pcl::PointXYZ>::Ptr pFileCloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -701,7 +686,7 @@ int main() {
 //	oViewPoint.y = 0.92239;
 //	oViewPoint.z = -0.835947;
 //	pViewPoints->points.push_back(oViewPoint);
-//	
+//
 //	for (int i = 0; i != 1; ++i){
 //		//compute signed distance of a query nodes(voxels)
 //		SignedDistance oSDer;
@@ -713,8 +698,8 @@ int main() {
 //
 //	//marching cuber
 //	CIsoSurface<float> oMarchingCuber;
-//	oMarchingCuber.GenerateSurface(vSDMap, 0, 
-//		                           oVoxeler.m_iFinalVoxelNum.ixnum - 1, oVoxeler.m_iFinalVoxelNum.iynum - 1, oVoxeler.m_iFinalVoxelNum.iznum - 1, 
+//	oMarchingCuber.GenerateSurface(vSDMap, 0,
+//		                           oVoxeler.m_iFinalVoxelNum.ixnum - 1, oVoxeler.m_iFinalVoxelNum.iynum - 1, oVoxeler.m_iFinalVoxelNum.iznum - 1,
 //		                           oVoxeler.m_oVoxelLength.x, oVoxeler.m_oVoxelLength.y, oVoxeler.m_oVoxelLength.z);
 //
 //	//
@@ -745,7 +730,7 @@ int main() {
 //		}
 //	}
 //	WritePointCloudTxt("Outlier_corner.txt", *pOutlierClouds, vOutlierValue);
-//	
+//
 //	//pcl::PolygonMesh MeshModel;
 //	//pcl::toPCLPointCloud2(*pRawCloud,MeshModel.cloud);
 //	//MeshModel.polygons = oSDer.m_vSurfaceIdxs;
@@ -757,16 +742,16 @@ int main() {
 //	//viewer = hpdisplay.Showclassification(mc->m_vCornerCloud, vInner, "assign");
 //	viewer = hpdisplay.Showfeatureresult(*oVoxeler.m_pCornerCloud, vSDMap, "redgreen");
 //	//viewer = hpdisplay.Showclassification(pVoxelCorners, "assign");
-//	viewer->addSphere(oViewPoint, 0.02, 0.0, 0.0, 1.0, "viewpointer");	
+//	viewer->addSphere(oViewPoint, 0.02, 0.0, 0.0, 1.0, "viewpointer");
 //	//viewer->addPolygonMesh<pcl::PointXYZ>(pRawCloud, oSDer.m_vSurfaceIdxs, "polyline");
 //
 //
 //	while (!viewer->wasStopped()){
 //
 //		viewer->spinOnce ();
-//	
+//
 //	}
-//	
+//
 //	return 0;
 //
 //
@@ -780,7 +765,7 @@ int main() {
 //#include "HpdPointCloudDisplay.h"
 //#include <pcl/range_image/range_image.h>    //���ͼ���ͷ�ļ�
 //
-//int main(int argc, char** argv) {
+// int main(int argc, char** argv) {
 //	pcl::PointCloud<pcl::PointXYZ> pointCloud;   //������ƵĶ���
 //
 //	// ѭ���������Ƶ�����
