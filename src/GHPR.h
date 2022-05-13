@@ -2,9 +2,9 @@
 #define GHPR_H
 #include <pcl/point_types.h>
 #include <pcl/surface/convex_hull.h>
-#include <pcl/surface/concave_hull.h> //important
-#include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree.h>
+// #include <pcl/surface/concave_hull.h> //important
+// #include <pcl/io/pcd_io.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 // GHPR algorithm
 // GHPR - General hidden point removal
