@@ -101,7 +101,7 @@ void GHPR::ConvertCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pCloud)
 
 	m_pTransCloud->clear();
 
-	// the modulus of each point
+	// the modulus of each point; The  distance between the point(x, y, z) and origin point(0, 0, 0)
 	std::vector<float> vNormEachPoint;
 
 	// get local coordinates based on the viewpoint
@@ -114,12 +114,16 @@ void GHPR::ConvertCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pCloud)
 		oOnePoint.y = pCloud->points[i].y - m_oViewPInWorld.y;
 		oOnePoint.z = pCloud->points[i].z - m_oViewPInWorld.z;
 		m_pTransCloud->points.push_back(oOnePoint);
-
 		// calculate the modulus length
 		vNormEachPoint.push_back(NormVector(oOnePoint));
 	}
 
 	// get the radius of local coordiante system
+	if (vNormEachPoint.size() == 0)
+	{
+		printf("somthing wrong here: GHPR::ConvertCloud\n");
+	}
+
 	m_fRadius = pow(10.0, param) * GetMaxValue(vNormEachPoint);
 
 	// Project the original point to another space, In order to reduce memory consumption,
@@ -137,7 +141,8 @@ void GHPR::ConvertCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pCloud)
 	oLocalViewPoint.x = 0.0;
 	oLocalViewPoint.y = 0.0;
 	oLocalViewPoint.z = 0.0;
-	m_pTransCloud->points.push_back(oLocalViewPoint);
+	// m_pTransCloud->points.push_back(oLocalViewPoint);
+	m_pTransCloud->push_back(oLocalViewPoint); // we can pushback a point directily. In this way, we can update width and height of m_pTransCloud;
 
 	// Now, the transposed transformed radius has been obtained, we set it True
 	m_bComputeRadius = true;
@@ -231,8 +236,13 @@ Besides, it also obtains the rough model from the given perspective (viewpoint).
 void GHPR::Compute(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pCloud, bool bIndexRelation)
 {
 
+	if (pCloud->points.size() == 0)
+	{
+		printf("SWH: GHPR::Compute(). the input cloud size = 0\n");
+	}
+
 	// convert pCloud to m_pTransCloud
-	ConvertCloud(pCloud);
+	ConvertCloud(pCloud); 
 
 	// get the viewpoint idx
 	m_iViewWorldIdx = m_pTransCloud->points.size() - 1;

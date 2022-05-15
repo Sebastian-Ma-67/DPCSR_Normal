@@ -1,7 +1,6 @@
 #include "ExplicitRec.h"
 #define PI 3.1415926
 
-
 ExplicitRec::ExplicitRec() : m_bElevationFlag(false), m_pCenterNormal(new pcl::PointCloud<pcl::PointNormal>)
 {
 }
@@ -129,9 +128,9 @@ void ExplicitRec::RemovePseudoFaces(const pcl::PointCloud<pcl::PointXYZ> &vCente
 /*=======================================
 FrameReconstruction
 Input: vSceneCloud - one frame point clouds
-Outout: vScenePNormal - input point with mesh normal
+Outout: vScenePNormal - output point with mesh normal
 Output: none
-Function: clear some data
+Function: clear some data? not recon?
 ========================================*/
 void ExplicitRec::FrameReconstruction(const pcl::PointCloud<pcl::PointXYZ> &vSceneCloud, pcl::PointCloud<pcl::PointNormal> &vScenePNormal)
 {
@@ -159,12 +158,17 @@ void ExplicitRec::FrameReconstruction(const pcl::PointCloud<pcl::PointXYZ> &vSce
 	// triangular face in each sector
 	for (int i = 0; i != vPointSecIdxs.size(); ++i)
 	{
+		if (vPointSecIdxs[i].size() < 10) // this "10" is just random pick one. u can use some other number like 5  or 20;
+		{
+			continue;
+		}
 
 		// point clouds inside one sector
 		pcl::PointCloud<pcl::PointXYZ>::Ptr pSectorCloud(new pcl::PointCloud<pcl::PointXYZ>);
 		// get a point clouds in one section
 		for (int j = 0; j != vPointSecIdxs[i].size(); ++j)
 		{
+
 			// get point index
 			int iSecPointInAllIdx = vPointSecIdxs[i][j];
 			// construct point clouds
@@ -260,6 +264,9 @@ void ExplicitRec::FrameReconstruction(const pcl::PointCloud<pcl::PointXYZ> &vSce
 		}
 
 	} // end  i != vPointSecIdxs.size()
+
+	vScenePNormal.width = vScenePNormal.points.size();
+	vScenePNormal.height = 1;
 }
 
 /*=======================================

@@ -7,7 +7,7 @@
             "request": "launch",
             // Resolved by CMake Tools:
             "program": "${workspaceFolder}/build/ScanReconstruction",
-            "args": ["${workspaceFolder}/data/scene1oneframe.pcd", 
+            "args": ["${workspaceFolder}/data/000000-Cloud.pcd", 
                     "${workspaceFolder}/data/sampled_clouds.ply"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",

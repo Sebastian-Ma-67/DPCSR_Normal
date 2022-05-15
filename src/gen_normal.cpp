@@ -1,6 +1,6 @@
 ///*************real-time reconstruction*********************/
 // #include "HpdPointCloudDisplay.h" // just for showing
-#include "LasOperator.h"		  // just for input
+#include "LasOperator.h" // just for input
 #include "SectorPartition.h"
 #include "ExplicitRec.h"
 // #include "SignedDistance.h"
@@ -21,7 +21,13 @@ void SamplePoints(const pcl::PointCloud<pcl::PointXYZ> &vCloud,
 	{
 
 		for (int i = 0; i < vCloud.points.size(); i = i + iSampleNum)
-			vNewCloud.push_back(vCloud.points[i]);
+		{
+			float depth = pow(vCloud.points[i].x, 2) + pow(vCloud.points[i].y, 2) + pow(vCloud.points[i].z, 2);
+			if (depth > 0.1 && depth < 2500)
+			{
+				vNewCloud.push_back(vCloud.points[i]);
+			}
+		}
 
 		// over the function and output
 		return;
@@ -48,7 +54,7 @@ int main(int argc, char **argv)
 
 	HPDpointclouddataread(argv[1], pRawCloud, vScenePoints, 2);
 
-	SamplePoints(*pRawCloud, *pSceneCloud, 3);
+	SamplePoints(*pRawCloud, *pSceneCloud, 1);
 
 	pcl::PointXYZ oViewPoint;
 	// x 0.535947 y  0.62239 z 0.535947 bunny
@@ -68,7 +74,9 @@ int main(int argc, char **argv)
 	int iFacesNum;
 	oExplicitBuilder.CountNumber(iVerticesNum, iFacesNum);
 
-	pcl::io::savePLYFileASCII(argv[2], *oExplicitBuilder.m_pCenterNormal);
+	// pcl::io::savePLYFileASCII(argv[2], *oExplicitBuilder.m_pCenterNormal);
+	pcl::io::savePLYFileASCII(argv[2], *pFramePNormal);
+
 
 	std::cout << "Number of input points: " << pRawCloud->points.size() << std::endl;
 	std::cout << "Number of vertices: " << iVerticesNum << std::endl;
